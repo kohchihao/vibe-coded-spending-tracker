@@ -74,7 +74,11 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-export function ExpenseChart() {
+interface ExpenseChartProps {
+  selectedMonth: string;
+}
+
+export function ExpenseChart({ selectedMonth }: ExpenseChartProps) {
   const { privacyMode, isLoading } = usePrivacy();
 
   // Don't render anything while loading
@@ -86,7 +90,13 @@ export function ExpenseChart() {
     <Card className="border-border/40">
       <CardHeader>
         <CardTitle>Expense Breakdown</CardTitle>
-        <CardDescription>Your spending by category this month</CardDescription>
+        <CardDescription>
+          Your spending by category for{' '}
+          {new Date(selectedMonth).toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          })}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
@@ -96,7 +106,10 @@ export function ExpenseChart() {
                 data={expenseCategories}
                 cx="50%"
                 cy="50%"
-                labelLine={false}
+                label={({ name, percent }) =>
+                  `${name} (${(percent * 100).toFixed(1)}%)`
+                }
+                labelLine={true}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
