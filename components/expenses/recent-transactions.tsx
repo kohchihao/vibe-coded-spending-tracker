@@ -1,57 +1,63 @@
-"use client"
+'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatCurrency } from "@/lib/utils"
-import { usePrivacy } from "@/contexts/privacy-context"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { usePrivacy } from '@/contexts/privacy-context';
+import { formatCurrency } from '@/lib/utils';
 
 // Mock data for recent transactions
 const recentTransactions = [
   {
-    id: "1",
-    description: "Grocery Shopping",
+    id: '1',
+    description: 'Grocery Shopping',
     amount: 78.45,
-    date: "2025-04-15",
-    category: "Food",
-    account: "Credit Card",
+    date: '2025-04-15',
+    category: 'Food',
+    account: 'Credit Card',
   },
   {
-    id: "2",
-    description: "Coffee Shop",
+    id: '2',
+    description: 'Coffee Shop',
     amount: 4.5,
-    date: "2025-04-14",
-    category: "Food",
-    account: "Cash",
+    date: '2025-04-14',
+    category: 'Food',
+    account: 'Cash',
   },
   {
-    id: "3",
-    description: "Gas Station",
+    id: '3',
+    description: 'Gas Station',
     amount: 45.67,
-    date: "2025-04-13",
-    category: "Transportation",
-    account: "Credit Card",
+    date: '2025-04-13',
+    category: 'Transportation',
+    account: 'Credit Card',
   },
   {
-    id: "4",
-    description: "Movie Tickets",
+    id: '4',
+    description: 'Movie Tickets',
     amount: 24.99,
-    date: "2025-04-12",
-    category: "Entertainment",
-    account: "Bank Account",
+    date: '2025-04-12',
+    category: 'Entertainment',
+    account: 'Bank Account',
   },
   {
-    id: "5",
-    description: "Phone Bill",
+    id: '5',
+    description: 'Phone Bill',
     amount: 65.0,
-    date: "2025-04-10",
-    category: "Bills",
-    account: "Bank Account",
+    date: '2025-04-10',
+    category: 'Bills',
+    account: 'Bank Account',
   },
-]
+];
 
 // Function to get category icon
 function getCategoryIcon(category: string) {
   switch (category) {
-    case "Food":
+    case 'Food':
       return {
         icon: () => (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900">
@@ -82,8 +88,8 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
-    case "Transportation":
+      };
+    case 'Transportation':
       return {
         icon: () => (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
@@ -106,8 +112,8 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
-    case "Entertainment":
+      };
+    case 'Entertainment':
       return {
         icon: () => (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
@@ -129,8 +135,8 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
-    case "Bills":
+      };
+    case 'Bills':
       return {
         icon: () => (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
@@ -153,8 +159,8 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
-    case "Shopping":
+      };
+    case 'Shopping':
       return {
         icon: () => (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
@@ -179,8 +185,8 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
-    case "Health":
+      };
+    case 'Health':
       return {
         icon: () => (
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900">
@@ -202,7 +208,7 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
+      };
     default:
       return {
         icon: () => (
@@ -225,18 +231,25 @@ function getCategoryIcon(category: string) {
             </svg>
           </div>
         ),
-      }
+      };
   }
 }
 
 export function RecentTransactions() {
-  const { privacyMode } = usePrivacy()
+  const { privacyMode, isLoading } = usePrivacy();
+
+  // Don't render anything while loading
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Card className="col-span-4">
       <CardHeader className="pb-3">
         <CardTitle>Recent Transactions</CardTitle>
-        <CardDescription className="hidden md:block">Your most recent expenses across all accounts.</CardDescription>
+        <CardDescription className="hidden md:block">
+          Your most recent expenses across all accounts.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6 md:space-y-8">
@@ -244,17 +257,20 @@ export function RecentTransactions() {
             <div key={transaction.id} className="flex items-center">
               {getCategoryIcon(transaction.category).icon()}
               <div className="ml-4 space-y-1">
-                <p className="text-sm font-medium leading-none">{transaction.description}</p>
+                <p className="text-sm font-medium leading-none">
+                  {transaction.description}
+                </p>
                 <p className="text-sm text-muted-foreground">
                   {transaction.category} • {transaction.account}
                 </p>
               </div>
-              <div className="ml-auto font-medium">{formatCurrency(transaction.amount, privacyMode)}</div>
+              <div className="ml-auto font-medium">
+                {formatCurrency(transaction.amount, privacyMode)}
+              </div>
             </div>
           ))}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-

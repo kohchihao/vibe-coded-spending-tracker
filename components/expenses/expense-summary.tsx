@@ -1,15 +1,20 @@
-"use client"
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowDownIcon, ArrowUpIcon, DollarSign } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-import { usePrivacy } from "@/contexts/privacy-context"
-import { useIsMobile } from "@/hooks/use-is-mobile"
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePrivacy } from '@/contexts/privacy-context';
+import { useIsMobile } from '@/hooks/use-is-mobile';
+import { formatCurrency } from '@/lib/utils';
+import { ArrowDownIcon, ArrowUpIcon, DollarSign } from 'lucide-react';
 
 export function ExpenseSummary() {
-  const { privacyMode } = usePrivacy()
-  const isMobile = useIsMobile()
+  const { privacyMode, isLoading } = usePrivacy();
+  const isMobile = useIsMobile();
+
+  // Don't render anything while loading
+  if (isLoading) {
+    return null;
+  }
 
   // For mobile, just show a simple card with total spending
   if (isMobile) {
@@ -20,11 +25,13 @@ export function ExpenseSummary() {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(1245.89, privacyMode)}</div>
+          <div className="text-2xl font-bold">
+            {formatCurrency(1245.89, privacyMode)}
+          </div>
           <p className="text-xs text-muted-foreground">For April 2025</p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   // Desktop view with tabs and multiple cards
@@ -42,27 +49,37 @@ export function ExpenseSummary() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Spending</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Total Spending
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(1245.89, privacyMode)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(1245.89, privacyMode)}
+              </div>
               <p className="text-xs text-muted-foreground">For April 2025</p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Change</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Monthly Change
+              </CardTitle>
               <ArrowUpIcon className="h-4 w-4 text-destructive" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">+12.5%</div>
-              <p className="text-xs text-muted-foreground">Compared to last month</p>
+              <p className="text-xs text-muted-foreground">
+                Compared to last month
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Top Category</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Top Category
+              </CardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -78,17 +95,25 @@ export function ExpenseSummary() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">Food</div>
-              <p className="text-xs text-muted-foreground">{formatCurrency(345.65, privacyMode)} (27.7%)</p>
+              <p className="text-xs text-muted-foreground">
+                {formatCurrency(345.65, privacyMode)} (27.7%)
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Daily Average</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Daily Average
+              </CardTitle>
               <ArrowDownIcon className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(41.53, privacyMode)}</div>
-              <p className="text-xs text-muted-foreground">-5.2% from last month</p>
+              <div className="text-2xl font-bold">
+                {formatCurrency(41.53, privacyMode)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                -5.2% from last month
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -97,11 +122,15 @@ export function ExpenseSummary() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Cash Spending</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Cash Spending
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(245.5, privacyMode)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(245.5, privacyMode)}
+              </div>
               <p className="text-xs text-muted-foreground">For April 2025</p>
             </CardContent>
           </Card>
@@ -111,11 +140,15 @@ export function ExpenseSummary() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Credit Card Spending</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Credit Card Spending
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(678.24, privacyMode)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(678.24, privacyMode)}
+              </div>
               <p className="text-xs text-muted-foreground">For April 2025</p>
             </CardContent>
           </Card>
@@ -125,17 +158,20 @@ export function ExpenseSummary() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Bank Account Spending</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Bank Account Spending
+              </CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(322.15, privacyMode)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(322.15, privacyMode)}
+              </div>
               <p className="text-xs text-muted-foreground">For April 2025</p>
             </CardContent>
           </Card>
         </div>
       </TabsContent>
     </Tabs>
-  )
+  );
 }
-
