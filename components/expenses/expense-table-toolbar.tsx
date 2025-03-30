@@ -1,19 +1,25 @@
-"use client"
+'use client';
 
-import { Cross2Icon } from "@radix-ui/react-icons"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { PlusCircle } from "lucide-react"
-import Link from "next/link"
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Cross2Icon } from '@radix-ui/react-icons';
+import { PlusCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export function ExpenseTableToolbar() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        <Input placeholder="Filter expenses..." className="h-9 w-full sm:w-[300px]" />
+        <Input placeholder="Filter expenses..." className="h-9 flex-1" />
         <Select defaultValue="all">
-          <SelectTrigger className="h-9 w-full sm:w-[150px]">
+          <SelectTrigger className="h-9 flex-1">
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
@@ -27,7 +33,7 @@ export function ExpenseTableToolbar() {
           </SelectContent>
         </Select>
         <Select defaultValue="all">
-          <SelectTrigger className="h-9 w-full sm:w-[150px]">
+          <SelectTrigger className="h-9 flex-1">
             <SelectValue placeholder="Account" />
           </SelectTrigger>
           <SelectContent>
@@ -49,6 +55,5 @@ export function ExpenseTableToolbar() {
         </Link>
       </Button>
     </div>
-  )
+  );
 }
-
