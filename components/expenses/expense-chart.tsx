@@ -62,9 +62,9 @@ const CustomTooltip = ({ active, payload }: any) => {
 
   if (active && payload && payload.length) {
     return (
-      <div className="bg-background p-3 border rounded-md shadow-sm">
-        <p className="font-medium">{payload[0].name}</p>
-        <p className="text-sm">
+      <div className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-3 border rounded-lg shadow-lg">
+        <p className="font-medium text-sm">{payload[0].name}</p>
+        <p className="text-sm font-semibold">
           {formatCurrency(payload[0].value, privacyMode)}
         </p>
         <p className="text-xs text-muted-foreground">{`${payload[0].payload.percentage}% of total`}</p>
@@ -83,7 +83,7 @@ export function ExpenseChart() {
   }
 
   return (
-    <Card>
+    <Card className="border-border/40">
       <CardHeader>
         <CardTitle>Expense Breakdown</CardTitle>
         <CardDescription>Your spending by category this month</CardDescription>
@@ -100,13 +100,28 @@ export function ExpenseChart() {
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
+                animationBegin={0}
+                animationDuration={1000}
+                animationEasing="ease-out"
               >
                 {expenseCategories.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    stroke="none"
+                  />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip />} />
-              <Legend formatter={(value) => <span>{value}</span>} />
+              <Tooltip content={<CustomTooltip />} cursor={false} />
+              <Legend
+                formatter={(value) => (
+                  <span className="text-sm text-muted-foreground">{value}</span>
+                )}
+                wrapperStyle={{
+                  paddingTop: '20px',
+                  fontSize: '14px',
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
