@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { usePrivacy } from '@/contexts/privacy-context';
 import { formatCurrency } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 // Mock data for expense categories
 const expenseCategories = [
@@ -55,7 +56,7 @@ export function ExpenseList() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {expenseCategories.map((category) => (
+          {expenseCategories.map((category, index) => (
             <div key={category.category} className="flex items-center">
               <div className="w-full space-y-1">
                 <div className="flex items-center justify-between">
@@ -68,14 +69,28 @@ export function ExpenseList() {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="h-2 w-full rounded-full bg-muted">
-                    <div
+                    <motion.div
                       className="h-2 rounded-full bg-primary"
-                      style={{ width: `${category.percentage}%` }}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${category.percentage}%` }}
+                      transition={{
+                        duration: 0.8,
+                        delay: index * 0.1,
+                        ease: 'easeOut',
+                      }}
                     />
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <motion.span
+                    className="text-xs text-muted-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.1 + 0.8,
+                    }}
+                  >
                     {category.percentage}%
-                  </span>
+                  </motion.span>
                 </div>
               </div>
             </div>

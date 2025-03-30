@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { formatCurrency } from '@/lib/utils';
+import { motion } from 'framer-motion';
 import { PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -145,7 +146,7 @@ export default function ExpensesPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {expenseCategories.map((category) => (
+                {expenseCategories.map((category, index) => (
                   <div key={category.category} className="flex items-center">
                     <div className="w-full space-y-1">
                       <div className="flex items-center justify-between">
@@ -158,14 +159,24 @@ export default function ExpensesPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="h-2 w-full rounded-full bg-muted">
-                          <div
+                          <motion.div
                             className="h-2 rounded-full bg-primary"
-                            style={{ width: `${category.percentage}%` }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${category.percentage}%` }}
+                            transition={{ duration: 0.5, delay: 0.2 }}
                           />
                         </div>
-                        <span className="text-xs text-muted-foreground">
+                        <motion.span
+                          className="text-xs text-muted-foreground"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{
+                            duration: 0.5,
+                            delay: index * 0.1 + 0.8,
+                          }}
+                        >
                           {category.percentage}%
-                        </span>
+                        </motion.span>
                       </div>
                     </div>
                   </div>
