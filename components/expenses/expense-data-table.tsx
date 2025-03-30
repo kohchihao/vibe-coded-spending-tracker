@@ -150,11 +150,6 @@ export function ExpenseDataTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  // Don't render anything while loading
-  if (isLoading) {
-    return null;
-  }
-
   // Define the columns for the expense table
   const columns: ColumnDef<Expense>[] = [
     {
@@ -272,6 +267,11 @@ export function ExpenseDataTable() {
       columnVisibility,
     },
   });
+
+  // Don't render anything while loading
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="rounded-md border">
