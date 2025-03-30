@@ -1,11 +1,11 @@
-import { DashboardHeader } from "@/components/dashboard/dashboard-header"
-import { DashboardShell } from "@/components/dashboard/dashboard-shell"
-import { ExpenseList } from "@/components/expenses/expense-list"
-import { ExpenseSummary } from "@/components/expenses/expense-summary"
-import { RecentTransactions } from "@/components/expenses/recent-transactions"
-import { Button } from "@/components/ui/button"
-import { PlusCircle } from "lucide-react"
-import Link from "next/link"
+import { DashboardHeader } from '@/components/dashboard/dashboard-header';
+import { DashboardShell } from '@/components/dashboard/dashboard-shell';
+import { ExpenseList } from '@/components/expenses/expense-list';
+import { ExpenseSummary } from '@/components/expenses/expense-summary';
+import { RecentTransactions } from '@/components/expenses/recent-transactions';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
@@ -31,7 +31,11 @@ export default function DashboardPage() {
 
         {/* Floating action button for mobile - positioned at bottom LEFT */}
         <div className="fixed bottom-6 left-6 z-10 md:hidden">
-          <Button size="lg" className="h-14 w-14 rounded-full shadow-lg" asChild>
+          <Button
+            size="lg"
+            className="h-14 w-14 rounded-full shadow-lg"
+            asChild
+          >
             <Link href="/expenses/add">
               <PlusCircle className="h-6 w-6" />
               <span className="sr-only">Add Expense</span>
@@ -39,17 +43,16 @@ export default function DashboardPage() {
           </Button>
         </div>
 
-        {/* Recent transactions (prioritized) */}
-        <div>
-          <RecentTransactions />
-        </div>
-
-        {/* Expense breakdown */}
-        <div className="hidden md:block">
-          <ExpenseList />
+        {/* Recent transactions and expense breakdown side by side */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <RecentTransactions />
+          </div>
+          <div>
+            <ExpenseList />
+          </div>
         </div>
       </div>
     </DashboardShell>
-  )
+  );
 }
-
