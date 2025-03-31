@@ -4,15 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePrivacy } from '@/contexts/privacy-context';
 import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useMonthlyTotals } from '@/hooks/use-monthly-totals';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign } from 'lucide-react';
 
 export function ExpenseSummary() {
-  const { privacyMode, isLoading } = usePrivacy();
+  const { privacyMode, isLoading: privacyLoading } = usePrivacy();
   const isMobile = useIsMobile();
+  const { data: monthlyTotals, isLoading: totalsLoading } = useMonthlyTotals();
 
   // Don't render anything while loading
-  if (isLoading) {
+  if (privacyLoading || totalsLoading) {
     return null;
   }
 
@@ -26,9 +28,15 @@ export function ExpenseSummary() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {formatCurrency(1245.89, privacyMode)}
+            {formatCurrency(monthlyTotals?.total_expenses || 0, privacyMode)}
           </div>
-          <p className="text-xs text-muted-foreground">For April 2025</p>
+          <p className="text-xs text-muted-foreground">
+            For{' '}
+            {new Date().toLocaleString('default', {
+              month: 'long',
+              year: 'numeric',
+            })}
+          </p>
         </CardContent>
       </Card>
     );
@@ -56,9 +64,18 @@ export function ExpenseSummary() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {formatCurrency(1245.89, privacyMode)}
+                {formatCurrency(
+                  monthlyTotals?.total_expenses || 0,
+                  privacyMode
+                )}
               </div>
-              <p className="text-xs text-muted-foreground">For April 2025</p>
+              <p className="text-xs text-muted-foreground">
+                For{' '}
+                {new Date().toLocaleString('default', {
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </p>
             </CardContent>
           </Card>
           <Card>
@@ -109,7 +126,10 @@ export function ExpenseSummary() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {formatCurrency(41.53, privacyMode)}
+                {formatCurrency(
+                  (monthlyTotals?.total_expenses || 0) / 30,
+                  privacyMode
+                )}
               </div>
               <p className="text-xs text-muted-foreground">
                 -5.2% from last month

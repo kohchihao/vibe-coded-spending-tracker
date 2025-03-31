@@ -215,10 +215,12 @@ export const transactionsService = {
     userId: string,
     month?: Date
   ): Promise<MonthlyTotals> => {
-    const { data, error } = await supabase.rpc('get_monthly_totals', {
-      p_user_id: userId,
-      p_month: month?.toISOString(),
-    });
+    const { data, error } = await supabase
+      .rpc('get_monthly_totals', {
+        p_user_id: userId,
+        p_month: month?.toISOString(),
+      })
+      .single<MonthlyTotals>();
 
     if (error) throw new Error(error.message);
     return data;
