@@ -21,6 +21,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useSession } from '@/contexts/session-context';
+import { useMonthlyTotal } from '@/lib/hooks/use-monthly-total';
 import { formatCurrency } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { PlusCircle } from 'lucide-react';
@@ -61,13 +63,17 @@ const expenseCategories = [
   },
 ];
 
-// Generate last 12 months for the selector
+// Generate last 36 months for the selector
 const months = (() => {
   const date = new Date();
+  date.setDate(1); // Ensure we're on the 1st of the month
   return Array.from({ length: 36 }, (_, i) => {
     const currentDate = new Date(date.getFullYear(), date.getMonth() - i, 1);
+    const value = `${currentDate.getFullYear()}-${String(
+      currentDate.getMonth() + 1
+    ).padStart(2, '0')}`;
     return {
-      value: currentDate.toISOString().slice(0, 7), // Format: YYYY-MM
+      value, // Format: YYYY-MM
       label: currentDate.toLocaleDateString('en-US', {
         month: 'long',
         year: 'numeric',
@@ -77,13 +83,19 @@ const months = (() => {
 })();
 
 export default function ExpensesPage() {
+  const { user } = useSession();
   const [selectedMonth, setSelectedMonth] = useState(months[0].value);
 
-  // Calculate total spending for the selected month
-  const totalSpending = expenseCategories.reduce(
-    (sum, category) => sum + category.amount,
-    0
+  // Convert selectedMonth string to Date object
+  const selectedMonthDate = new Date(selectedMonth);
+
+  const { data: monthlyTotals, isLoading } = useMonthlyTotal(
+    user?.id ?? '',
+    selectedMonthDate
   );
+
+  // Calculate total spending for the selected month
+  const totalSpending = monthlyTotals?.total_expenses ?? 0;
 
   return (
     <DashboardShell>
@@ -118,7 +130,11 @@ export default function ExpensesPage() {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold">
-            {formatCurrency(totalSpending)}
+            {isLoading ? (
+              <div className="h-8 w-32 animate-pulse rounded bg-muted" />
+            ) : (
+              formatCurrency(totalSpending)
+            )}
           </div>
         </CardContent>
       </Card>

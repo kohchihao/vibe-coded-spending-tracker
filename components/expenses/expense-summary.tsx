@@ -4,14 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePrivacy } from '@/contexts/privacy-context';
 import { useIsMobile } from '@/hooks/use-is-mobile';
-import { useMonthlyTotals } from '@/hooks/use-monthly-totals';
+import { useCurrentMonthTotals } from '@/lib/hooks/useCurrentMonthTotals';
 import { formatCurrency } from '@/lib/utils';
 import { ArrowDownIcon, ArrowUpIcon, DollarSign } from 'lucide-react';
 
 export function ExpenseSummary() {
   const { privacyMode, isLoading: privacyLoading } = usePrivacy();
   const isMobile = useIsMobile();
-  const { data: monthlyTotals, isLoading: totalsLoading } = useMonthlyTotals();
+  const { data: monthlyTotals, isLoading: totalsLoading } =
+    useCurrentMonthTotals();
 
   // Don't render anything while loading
   if (privacyLoading || totalsLoading) {
