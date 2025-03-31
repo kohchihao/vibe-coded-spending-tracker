@@ -1,94 +1,159 @@
-"use client"
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "@/components/ui/use-toast"
-import { Card, CardContent } from "@/components/ui/card"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { useState } from "react"
-import { Badge } from "@/components/ui/badge"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from '@/components/ui/use-toast';
+import { useAccounts } from '@/lib/hooks/useAccounts';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useCategories } from '@/lib/hooks/useCategories';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 // Mock data for category-specific descriptions
 const categoryDescriptions = {
   food: [
-    "Grocery shopping",
-    "Restaurant",
-    "Coffee shop",
-    "Fast food",
-    "Takeout",
-    "Lunch",
-    "Dinner",
-    "Breakfast",
-    "Snacks",
+    'Grocery shopping',
+    'Restaurant',
+    'Coffee shop',
+    'Fast food',
+    'Takeout',
+    'Lunch',
+    'Dinner',
+    'Breakfast',
+    'Snacks',
   ],
-  transportation: ["Gas", "Uber/Lyft", "Public transit", "Parking", "Car maintenance", "Tolls", "Car wash"],
-  entertainment: ["Movies", "Concert", "Streaming service", "Books", "Games", "Hobbies", "Sports event"],
-  bills: ["Electricity", "Water", "Internet", "Phone", "Rent/Mortgage", "Insurance", "Subscription"],
-  shopping: ["Clothing", "Electronics", "Home goods", "Gifts", "Personal care", "Office supplies"],
-  health: ["Doctor visit", "Medication", "Gym membership", "Fitness equipment", "Vitamins/Supplements"],
-  other: ["Miscellaneous", "Donation", "Education", "Pet expenses", "Travel"],
-}
+  transportation: [
+    'Gas',
+    'Uber/Lyft',
+    'Public transit',
+    'Parking',
+    'Car maintenance',
+    'Tolls',
+    'Car wash',
+  ],
+  entertainment: [
+    'Movies',
+    'Concert',
+    'Streaming service',
+    'Books',
+    'Games',
+    'Hobbies',
+    'Sports event',
+  ],
+  bills: [
+    'Electricity',
+    'Water',
+    'Internet',
+    'Phone',
+    'Rent/Mortgage',
+    'Insurance',
+    'Subscription',
+  ],
+  shopping: [
+    'Clothing',
+    'Electronics',
+    'Home goods',
+    'Gifts',
+    'Personal care',
+    'Office supplies',
+  ],
+  health: [
+    'Doctor visit',
+    'Medication',
+    'Gym membership',
+    'Fitness equipment',
+    'Vitamins/Supplements',
+  ],
+  other: ['Miscellaneous', 'Donation', 'Education', 'Pet expenses', 'Travel'],
+};
 
 // Define the form schema
 const formSchema = z.object({
   description: z.string().min(2, {
-    message: "Description must be at least 2 characters.",
+    message: 'Description must be at least 2 characters.',
   }),
   amount: z.coerce.number().positive({
-    message: "Amount must be a positive number.",
+    message: 'Amount must be a positive number.',
   }),
   date: z.date({
-    required_error: "Please select a date.",
+    required_error: 'Please select a date.',
   }),
   category: z.string({
-    required_error: "Please select a category.",
+    required_error: 'Please select a category.',
   }),
   account: z.string({
-    required_error: "Please select an account.",
+    required_error: 'Please select an account.',
   }),
   notes: z.string().optional(),
-})
+});
 
 export function AddExpenseForm() {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { user } = useAuth();
+  const { data: accounts, isLoading: isLoadingAccounts } = useAccounts(
+    user?.id ?? ''
+  );
+  const { data: categories, isLoading: isLoadingCategories } = useCategories(
+    user?.id ?? ''
+  );
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      description: "",
+      description: '',
       amount: undefined,
       date: new Date(),
-      notes: "",
+      notes: '',
     },
-  })
+  });
 
   // Define form submission handler
   function onSubmit(values: z.infer<typeof formSchema>) {
     // In a real app, this would send data to your backend
-    console.log(values)
+    console.log(values);
     toast({
-      title: "Expense added",
-      description: "Your expense has been recorded successfully.",
-    })
-    form.reset()
-    setSelectedCategory(null)
+      title: 'Expense added',
+      description: 'Your expense has been recorded successfully.',
+    });
+    form.reset();
+    setSelectedCategory(null);
   }
 
   // Handle quick description selection
   const handleDescriptionSelect = (description: string) => {
-    form.setValue("description", description)
-  }
+    form.setValue('description', description);
+  };
 
   return (
     <Card>
@@ -104,8 +169,8 @@ export function AddExpenseForm() {
                     <FormLabel>Category</FormLabel>
                     <Select
                       onValueChange={(value) => {
-                        field.onChange(value)
-                        setSelectedCategory(value)
+                        field.onChange(value);
+                        setSelectedCategory(value);
                       }}
                       defaultValue={field.value}
                     >
@@ -115,13 +180,20 @@ export function AddExpenseForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="food">Food</SelectItem>
-                        <SelectItem value="transportation">Transportation</SelectItem>
-                        <SelectItem value="entertainment">Entertainment</SelectItem>
-                        <SelectItem value="bills">Bills</SelectItem>
-                        <SelectItem value="shopping">Shopping</SelectItem>
-                        <SelectItem value="health">Health</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        {isLoadingCategories ? (
+                          <SelectItem value="loading" disabled>
+                            Loading categories...
+                          </SelectItem>
+                        ) : (
+                          categories?.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={category.id.toString()}
+                            >
+                              {category.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -134,16 +206,30 @@ export function AddExpenseForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Account</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select an account" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="cash">Cash</SelectItem>
-                        <SelectItem value="credit">Credit Card</SelectItem>
-                        <SelectItem value="bank">Bank Account</SelectItem>
+                        {isLoadingAccounts ? (
+                          <SelectItem value="loading" disabled>
+                            Loading accounts...
+                          </SelectItem>
+                        ) : (
+                          accounts?.map((account) => (
+                            <SelectItem
+                              key={account.id}
+                              value={account.id.toString()}
+                            >
+                              {account.name}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -161,20 +247,24 @@ export function AddExpenseForm() {
                     </FormControl>
                     {selectedCategory && (
                       <div className="mt-2">
-                        <p className="text-xs text-muted-foreground mb-2">Quick select:</p>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Quick select:
+                        </p>
                         <div className="flex flex-wrap gap-2">
-                          {categoryDescriptions[selectedCategory as keyof typeof categoryDescriptions]?.map(
-                            (description, index) => (
-                              <Badge
-                                key={index}
-                                variant="outline"
-                                className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                                onClick={() => handleDescriptionSelect(description)}
-                              >
-                                {description}
-                              </Badge>
-                            ),
-                          )}
+                          {categoryDescriptions[
+                            selectedCategory as keyof typeof categoryDescriptions
+                          ]?.map((description, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                              onClick={() =>
+                                handleDescriptionSelect(description)
+                              }
+                            >
+                              {description}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
                     )}
@@ -189,7 +279,12 @@ export function AddExpenseForm() {
                   <FormItem>
                     <FormLabel>Amount</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="0.00"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -205,16 +300,28 @@ export function AddExpenseForm() {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant={"outline"}
-                            className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                            variant={'outline'}
+                            className={cn(
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
+                            )}
                           >
-                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus />
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
@@ -229,9 +336,15 @@ export function AddExpenseForm() {
                 <FormItem>
                   <FormLabel>Notes (Optional)</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Add any additional details here..." className="resize-none" {...field} />
+                    <Textarea
+                      placeholder="Add any additional details here..."
+                      className="resize-none"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>You can add any additional information about this expense.</FormDescription>
+                  <FormDescription>
+                    You can add any additional information about this expense.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -243,6 +356,5 @@ export function AddExpenseForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }
-
