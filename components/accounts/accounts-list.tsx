@@ -15,10 +15,12 @@ import { useSession } from '@/contexts/session-context';
 import { useAccounts } from '@/lib/hooks/useAccounts';
 import { formatCurrency } from '@/lib/utils';
 import { Edit } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function AccountsList() {
   const { privacyMode, isLoading } = usePrivacy();
   const { user } = useSession();
+  const router = useRouter();
   const { data: accounts, isLoading: isAccountsLoading } = useAccounts(
     user?.id ?? ''
   );
@@ -50,7 +52,11 @@ export function AccountsList() {
             <p className="text-xs text-muted-foreground">Current Balance</p>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/accounts/${account.id}/edit`)}
+            >
               <Edit className="mr-2 h-4 w-4" />
               Edit
             </Button>
