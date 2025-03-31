@@ -13,12 +13,14 @@ export function DashboardShell({ children, className }: DashboardShellProps) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 border-b bg-background">
-        <div className="container mx-auto max-w-screen-xl flex h-16 items-center justify-between py-4 md:px-4 lg:px-0">
-          <MainNav />
+        <div className="container mx-auto max-w-screen-xl flex h-16 items-center justify-between py-4 px-4 xl:px-0">
+          <div className="flex items-center">
+            <MobileNav className="md:hidden" />
+            <MainNav />
+          </div>
           <div className="flex items-center gap-4">
             <PrivacyToggle />
             <UserNav />
-            <MobileNav />
           </div>
         </div>
       </header>
