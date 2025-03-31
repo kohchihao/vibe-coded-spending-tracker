@@ -7,7 +7,6 @@ import { ExpenseChart } from '@/components/expenses/expense-chart';
 import { ExpenseDataTable } from '@/components/expenses/expense-data-table';
 import { ExpenseTableToolbar } from '@/components/expenses/expense-table-toolbar';
 import { TopExpenseList } from '@/components/expenses/top-expense-list';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -25,8 +24,6 @@ import {
 import { useSession } from '@/contexts/session-context';
 import { useMonthlyTotal } from '@/lib/hooks/use-monthly-total';
 import { formatCurrency } from '@/lib/utils';
-import { PlusCircle } from 'lucide-react';
-import Link from 'next/link';
 import { useState } from 'react';
 
 // Mock data for expense categories
@@ -155,16 +152,6 @@ export default function ExpensesPage() {
           <ExpenseTableToolbar />
         </div>
         <ExpenseDataTable selectedMonth={selectedMonth} />
-
-        {/* Desktop add expense button */}
-        <div className="hidden md:flex md:justify-center mt-6">
-          <Button size="lg" asChild>
-            <Link href="/expenses/add">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              Add New Expense
-            </Link>
-          </Button>
-        </div>
       </div>
     </DashboardShell>
   );
