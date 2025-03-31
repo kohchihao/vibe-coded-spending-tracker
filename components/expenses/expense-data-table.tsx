@@ -34,7 +34,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { usePrivacy } from '@/contexts/privacy-context';
+import { useSession } from '@/contexts/session-context';
 import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useMonthlyTransactions } from '@/lib/hooks/useMonthlyTransactions';
 import { formatCurrency } from '@/lib/utils';
 
 // Define the expense data type
@@ -48,96 +50,14 @@ export type Expense = {
   notes?: string;
 };
 
-// Mock data for expenses
-const expenses: Expense[] = [
-  {
-    id: '1',
-    description: 'Grocery Shopping',
-    amount: 78.45,
-    date: '2025-04-15',
-    category: 'Food',
-    account: 'Credit Card',
-    notes: 'Weekly grocery run',
-  },
-  {
-    id: '2',
-    description: 'Coffee Shop',
-    amount: 4.5,
-    date: '2025-04-14',
-    category: 'Food',
-    account: 'Cash',
-  },
-  {
-    id: '3',
-    description: 'Gas Station',
-    amount: 45.67,
-    date: '2025-04-13',
-    category: 'Transportation',
-    account: 'Credit Card',
-  },
-  {
-    id: '4',
-    description: 'Movie Tickets',
-    amount: 24.99,
-    date: '2025-04-12',
-    category: 'Entertainment',
-    account: 'Bank Account',
-    notes: 'Date night',
-  },
-  {
-    id: '5',
-    description: 'Phone Bill',
-    amount: 65.0,
-    date: '2025-04-10',
-    category: 'Bills',
-    account: 'Bank Account',
-  },
-  {
-    id: '6',
-    description: 'Dinner',
-    amount: 89.75,
-    date: '2025-04-09',
-    category: 'Food',
-    account: 'Credit Card',
-    notes: 'Anniversary dinner',
-  },
-  {
-    id: '7',
-    description: 'Clothing',
-    amount: 136.0,
-    date: '2025-04-08',
-    category: 'Shopping',
-    account: 'Credit Card',
-  },
-  {
-    id: '8',
-    description: 'Uber Ride',
-    amount: 18.5,
-    date: '2025-04-07',
-    category: 'Transportation',
-    account: 'Credit Card',
-  },
-  {
-    id: '9',
-    description: 'Internet Bill',
-    amount: 75.99,
-    date: '2025-04-05',
-    category: 'Bills',
-    account: 'Bank Account',
-  },
-  {
-    id: '10',
-    description: 'Gym Membership',
-    amount: 49.99,
-    date: '2025-04-01',
-    category: 'Health',
-    account: 'Bank Account',
-  },
-];
+interface ExpenseDataTableProps {
+  selectedMonth: string;
+}
 
-export function ExpenseDataTable() {
-  const { privacyMode, isLoading } = usePrivacy();
+export function ExpenseDataTable({ selectedMonth }: ExpenseDataTableProps) {
+  const { privacyMode, isLoading: isPrivacyLoading } = usePrivacy();
   const isMobile = useIsMobile();
+  const { user } = useSession();
   const [sorting, setSorting] = React.useState<SortingState>([
     {
       id: 'date',
@@ -149,6 +69,26 @@ export function ExpenseDataTable() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  const selectedMonthDate = React.useMemo(
+    () => new Date(selectedMonth),
+    [selectedMonth]
+  );
+  // Get transactions for the current month
+  const { data: transactions, isLoading: isTransactionsLoading } =
+    useMonthlyTransactions(user?.id ?? '', selectedMonthDate);
+
+  // Transform transactions into expenses for the table
+  const expenses: Expense[] =
+    transactions?.map((transaction) => ({
+      id: transaction.id.toString(),
+      description: transaction.description,
+      amount: transaction.amount,
+      date: transaction.date,
+      category: transaction.category_name,
+      account: transaction.account_name,
+      notes: transaction.notes ?? undefined,
+    })) ?? [];
 
   // Define the columns for the expense table
   const columns: ColumnDef<Expense>[] = [
@@ -269,7 +209,7 @@ export function ExpenseDataTable() {
   });
 
   // Don't render anything while loading
-  if (isLoading) {
+  if (isPrivacyLoading || isTransactionsLoading) {
     return null;
   }
 

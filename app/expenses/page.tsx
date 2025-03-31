@@ -154,7 +154,7 @@ export default function ExpensesPage() {
         <div className="hidden md:block">
           <ExpenseTableToolbar />
         </div>
-        <ExpenseDataTable />
+        <ExpenseDataTable selectedMonth={selectedMonth} />
 
         {/* Desktop add expense button */}
         <div className="hidden md:flex md:justify-center mt-6">

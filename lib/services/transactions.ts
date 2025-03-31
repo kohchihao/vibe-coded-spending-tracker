@@ -122,18 +122,29 @@ export const transactionsService = {
     userId: string,
     startDate: string,
     endDate: string
-  ): Promise<Transaction[]> => {
+  ): Promise<TransactionWithDetails[]> => {
     const { data, error } = await supabase
       .from('transactions')
-      .select('*')
+      .select(
+        `
+        *,
+        account:accounts(name),
+        category:categories(name, color, icon)
+      `
+      )
       .eq('user_id', userId)
-      .gte('date', startDate)
+      .gt('date', startDate)
       .lte('date', endDate)
-      .order('date', { ascending: false })
-      .overrideTypes<Transaction[], { merge: false }>();
+      .order('date', { ascending: false });
 
     if (error) throw new Error(error.message);
-    return data;
+    return data.map((transaction) => ({
+      ...transaction,
+      account_name: transaction.account.name,
+      category_name: transaction.category.name,
+      category_color: transaction.category.color,
+      category_icon: transaction.category.icon,
+    }));
   },
 
   // Get transactions by account
