@@ -1,16 +1,16 @@
-CREATE TABLE categories (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  type TEXT NOT NULL DEFAULT 'expense', -- 'expense' or 'income'
-  color TEXT,
-  icon TEXT,
-  budget_limit DECIMAL(12,2),
-  is_system BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  tags TEXT[],
-  UNIQUE(user_id, name)
-);
+-- CREATE TABLE categories (
+--   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--   user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+--   name TEXT NOT NULL,
+--   type TEXT NOT NULL DEFAULT 'expense', -- 'expense' or 'income'
+--   color TEXT,
+--   icon TEXT,
+--   budget_limit DECIMAL(12,2),
+--   is_system BOOLEAN DEFAULT FALSE,
+--   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+--   tags TEXT[],
+--   UNIQUE(user_id, name)
+-- );
 
 create table public.categories (
   id bigint generated always as identity not null,
