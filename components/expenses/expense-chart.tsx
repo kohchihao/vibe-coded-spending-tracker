@@ -8,6 +8,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { usePrivacy } from '@/contexts/privacy-context';
+import { useSession } from '@/contexts/session-context';
+import { useMonthlyExpenseBreakdown } from '@/lib/hooks/useMonthlyExpenseBreakdown';
 import { formatCurrency } from '@/lib/utils';
 import {
   Cell,
@@ -17,40 +19,6 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-
-// Mock data for expense categories
-const expenseCategories = [
-  {
-    name: 'Food',
-    value: 345.65,
-    percentage: 27.7,
-    color: '#f97316', // orange-500
-  },
-  {
-    name: 'Transportation',
-    value: 245.3,
-    percentage: 19.7,
-    color: '#3b82f6', // blue-500
-  },
-  {
-    name: 'Entertainment',
-    value: 198.45,
-    percentage: 15.9,
-    color: '#a855f7', // purple-500
-  },
-  {
-    name: 'Bills',
-    value: 320.49,
-    percentage: 25.7,
-    color: '#ef4444', // red-500
-  },
-  {
-    name: 'Shopping',
-    value: 136.0,
-    percentage: 10.9,
-    color: '#22c55e', // green-500
-  },
-];
 
 // Custom tooltip for the pie chart
 const CustomTooltip = ({ active, payload }: any) => {
@@ -74,17 +42,48 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
+// Generate a random color for each category
+const generateRandomColor = () => {
+  const colors = [
+    '#f97316', // orange-500
+    '#3b82f6', // blue-500
+    '#a855f7', // purple-500
+    '#ef4444', // red-500
+    '#22c55e', // green-500
+    '#f59e0b', // amber-500
+    '#ec4899', // pink-500
+    '#8b5cf6', // violet-500
+    '#14b8a6', // teal-500
+    '#f43f5e', // rose-500
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
 interface ExpenseChartProps {
   selectedMonth: string;
 }
 
 export function ExpenseChart({ selectedMonth }: ExpenseChartProps) {
-  const { privacyMode, isLoading } = usePrivacy();
+  const { isLoading } = usePrivacy();
+  const selectedMonthDate = new Date(selectedMonth);
+  const { user } = useSession();
+
+  const { data: expenseBreakdown, isLoading: expenseBreakdownLoading } =
+    useMonthlyExpenseBreakdown(user?.id ?? '', selectedMonthDate);
 
   // Don't render anything while loading
-  if (isLoading) {
+  if (isLoading || expenseBreakdownLoading) {
     return null;
   }
+
+  // Transform the expense breakdown data for the chart
+  const chartData =
+    expenseBreakdown?.map((category) => ({
+      name: category.category_name,
+      value: category.amount,
+      percentage: category.percentage,
+      color: generateRandomColor(),
+    })) ?? [];
 
   return (
     <Card className="border-border/40">
@@ -103,7 +102,7 @@ export function ExpenseChart({ selectedMonth }: ExpenseChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={expenseCategories}
+                data={chartData}
                 cx="50%"
                 cy="50%"
                 label={({ name, percent }) =>
@@ -117,7 +116,7 @@ export function ExpenseChart({ selectedMonth }: ExpenseChartProps) {
                 animationDuration={1000}
                 animationEasing="ease-out"
               >
-                {expenseCategories.map((entry, index) => (
+                {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={entry.color}

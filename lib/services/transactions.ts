@@ -240,4 +240,21 @@ export const transactionsService = {
     if (error) throw new Error(error.message);
     return (data as ExpenseBreakdown[]) || [];
   },
+
+  // Get expense breakdown by category for a specific month
+  getExpenseBreakdownWithDate: async (
+    userId: string,
+    targetDate: Date
+  ): Promise<ExpenseBreakdown[]> => {
+    const { data, error } = await supabase.rpc(
+      'get_expense_breakdown_with_date',
+      {
+        p_user_id: userId,
+        p_target_date: targetDate.toISOString(),
+      }
+    );
+
+    if (error) throw new Error(error.message);
+    return (data as ExpenseBreakdown[]) || [];
+  },
 };
