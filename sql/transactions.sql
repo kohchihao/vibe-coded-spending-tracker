@@ -20,7 +20,7 @@ create table public.transactions (
   user_id uuid not null,
   account_id bigint not null,
   category_id bigint not null,
-  recurring_id bigint not null,
+  recurring_id bigint null,
   type text not null,
   description text not null,
   amount numeric(12, 2) not null,
@@ -32,6 +32,5 @@ create table public.transactions (
   constraint transactions_pkey primary key (id),
   constraint transactions_account_id_fkey foreign KEY (account_id) references accounts (id) on delete CASCADE,
   constraint transactions_category_id_fkey foreign KEY (category_id) references categories (id) on delete RESTRICT,
-  constraint transactions_recurring_id_fkey foreign KEY (recurring_id) references recurring_transactions (id) on delete RESTRICT,
   constraint transactions_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE
 ) TABLESPACE pg_default;

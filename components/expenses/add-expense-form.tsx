@@ -28,74 +28,18 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui/use-toast';
+import { useSession } from '@/contexts/session-context';
 import { useAccounts } from '@/lib/hooks/useAccounts';
-import { useAuth } from '@/lib/hooks/useAuth';
 import { useCategories } from '@/lib/hooks/useCategories';
+import { transactionsService } from '@/lib/services/transactions';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-// Mock data for category-specific descriptions
-const categoryDescriptions = {
-  food: [
-    'Grocery shopping',
-    'Restaurant',
-    'Coffee shop',
-    'Fast food',
-    'Takeout',
-    'Lunch',
-    'Dinner',
-    'Breakfast',
-    'Snacks',
-  ],
-  transportation: [
-    'Gas',
-    'Uber/Lyft',
-    'Public transit',
-    'Parking',
-    'Car maintenance',
-    'Tolls',
-    'Car wash',
-  ],
-  entertainment: [
-    'Movies',
-    'Concert',
-    'Streaming service',
-    'Books',
-    'Games',
-    'Hobbies',
-    'Sports event',
-  ],
-  bills: [
-    'Electricity',
-    'Water',
-    'Internet',
-    'Phone',
-    'Rent/Mortgage',
-    'Insurance',
-    'Subscription',
-  ],
-  shopping: [
-    'Clothing',
-    'Electronics',
-    'Home goods',
-    'Gifts',
-    'Personal care',
-    'Office supplies',
-  ],
-  health: [
-    'Doctor visit',
-    'Medication',
-    'Gym membership',
-    'Fitness equipment',
-    'Vitamins/Supplements',
-  ],
-  other: ['Miscellaneous', 'Donation', 'Education', 'Pet expenses', 'Travel'],
-};
 
 // Define the form schema
 const formSchema = z.object({
@@ -119,13 +63,19 @@ const formSchema = z.object({
 
 export function AddExpenseForm() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useSession();
+  const router = useRouter();
   const { data: accounts, isLoading: isLoadingAccounts } = useAccounts(
     user?.id ?? ''
   );
   const { data: categories, isLoading: isLoadingCategories } = useCategories(
     user?.id ?? ''
   );
+
+  const selectedCategoryTags = selectedCategory
+    ? categories?.find((cat) => cat.id.toString() === selectedCategory)?.tags ??
+      []
+    : [];
 
   // Initialize the form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -139,15 +89,46 @@ export function AddExpenseForm() {
   });
 
   // Define form submission handler
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, this would send data to your backend
-    console.log(values);
-    toast({
-      title: 'Expense added',
-      description: 'Your expense has been recorded successfully.',
-    });
-    form.reset();
-    setSelectedCategory(null);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!user?.id) {
+      toast({
+        title: 'Error',
+        description: 'You must be logged in to add an expense.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      await transactionsService.create({
+        user_id: user.id,
+        account_id: parseInt(values.account),
+        category_id: parseInt(values.category),
+        type: 'expense',
+        description: values.description,
+        amount: values.amount,
+        date: values.date.toISOString().split('T')[0],
+        notes: values.notes || null,
+        tags: null,
+        recurring_id: 0,
+      });
+
+      toast({
+        title: 'Expense added',
+        description: 'Your expense has been recorded successfully.',
+      });
+
+      // Reset form and navigate back to dashboard
+      form.reset();
+      setSelectedCategory(null);
+      router.push('/dashboard');
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to add expense. Please try again.',
+        variant: 'destructive',
+      });
+    }
   }
 
   // Handle quick description selection
@@ -251,18 +232,14 @@ export function AddExpenseForm() {
                           Quick select:
                         </p>
                         <div className="flex flex-wrap gap-2">
-                          {categoryDescriptions[
-                            selectedCategory as keyof typeof categoryDescriptions
-                          ]?.map((description, index) => (
+                          {selectedCategoryTags.map((tag, index) => (
                             <Badge
                               key={index}
                               variant="outline"
                               className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                              onClick={() =>
-                                handleDescriptionSelect(description)
-                              }
+                              onClick={() => handleDescriptionSelect(tag)}
                             >
-                              {description}
+                              {tag}
                             </Badge>
                           ))}
                         </div>
