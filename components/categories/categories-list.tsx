@@ -13,13 +13,19 @@ import {
 import { useSession } from '@/contexts/session-context';
 import { useCategories } from '@/lib/hooks/useCategories';
 import { cn } from '@/lib/utils';
-import { Edit, Trash } from 'lucide-react';
+import { Edit } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import DynamicIcon from '../ui/icon';
 import { Spinner } from '../ui/spinner';
 
 export function CategoriesList() {
   const { user } = useSession();
+  const router = useRouter();
   const { data: categories, isLoading } = useCategories(user?.id ?? '');
+
+  const handleEdit = (id: number) => {
+    router.push(`/categories/${id}/edit`);
+  };
 
   if (isLoading) {
     return (
@@ -71,13 +77,13 @@ export function CategoriesList() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleEdit(category.id)}
+            >
               <Edit className="mr-2 h-4 w-4" />
               Edit
-            </Button>
-            <Button variant="outline" size="sm" className="text-destructive">
-              <Trash className="mr-2 h-4 w-4" />
-              Delete
             </Button>
           </CardFooter>
         </Card>
