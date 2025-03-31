@@ -1,3 +1,6 @@
+'use client';
+
+import { PrivateRoute } from '@/components/auth/private-route';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { DashboardShell } from '@/components/dashboard/dashboard-shell';
 import { AddExpenseFloatingButton } from '@/components/expenses/add-expanse-floating-button';
@@ -10,39 +13,44 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
-    <DashboardShell>
-      <DashboardHeader heading="Dashboard" text="View and manage your spending">
-        {/* Desktop Add Expense button */}
-        <div className="hidden md:block">
-          <Button asChild>
-            <Link href="/expenses/add">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Expense
-            </Link>
-          </Button>
-        </div>
-      </DashboardHeader>
-
-      {/* Mobile-optimized layout */}
-      <div className="grid gap-6">
-        {/* Simplified expense summary */}
-        <div className="grid gap-4">
-          <ExpenseSummary />
-        </div>
-
-        {/* Floating action button for mobile - positioned at bottom LEFT */}
-        <AddExpenseFloatingButton />
-
-        {/* Recent transactions and expense breakdown side by side */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <RecentTransactions />
+    <PrivateRoute>
+      <DashboardShell>
+        <DashboardHeader
+          heading="Dashboard"
+          text="View and manage your spending"
+        >
+          {/* Desktop Add Expense button */}
+          <div className="hidden md:block">
+            <Button asChild>
+              <Link href="/expenses/add">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Expense
+              </Link>
+            </Button>
           </div>
-          <div>
-            <ExpenseList />
+        </DashboardHeader>
+
+        {/* Mobile-optimized layout */}
+        <div className="grid gap-6">
+          {/* Simplified expense summary */}
+          <div className="grid gap-4">
+            <ExpenseSummary />
+          </div>
+
+          {/* Floating action button for mobile - positioned at bottom LEFT */}
+          <AddExpenseFloatingButton />
+
+          {/* Recent transactions and expense breakdown side by side */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <RecentTransactions />
+            </div>
+            <div>
+              <ExpenseList />
+            </div>
           </div>
         </div>
-      </div>
-    </DashboardShell>
+      </DashboardShell>
+    </PrivateRoute>
   );
 }
