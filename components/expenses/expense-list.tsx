@@ -8,43 +8,19 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { usePrivacy } from '@/contexts/privacy-context';
+import { useSession } from '@/contexts/session-context';
+import { useExpenseBreakdown } from '@/lib/hooks/useExpenseBreakdown';
 import { formatCurrency } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
-// Mock data for expense categories
-const expenseCategories = [
-  {
-    category: 'Food',
-    amount: 345.65,
-    percentage: 27.7,
-  },
-  {
-    category: 'Transportation',
-    amount: 245.3,
-    percentage: 19.7,
-  },
-  {
-    category: 'Entertainment',
-    amount: 198.45,
-    percentage: 15.9,
-  },
-  {
-    category: 'Bills',
-    amount: 320.49,
-    percentage: 25.7,
-  },
-  {
-    category: 'Shopping',
-    amount: 136.0,
-    percentage: 10.9,
-  },
-];
-
 export function ExpenseList() {
-  const { privacyMode, isLoading } = usePrivacy();
+  const { privacyMode, isLoading: privacyLoading } = usePrivacy();
+  const { user } = useSession();
+  const { data: expenseCategories, isLoading: dataLoading } =
+    useExpenseBreakdown();
 
   // Don't render anything while loading
-  if (isLoading) {
+  if (privacyLoading || dataLoading) {
     return null;
   }
 
@@ -56,12 +32,12 @@ export function ExpenseList() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {expenseCategories.map((category, index) => (
-            <div key={category.category} className="flex items-center">
+          {expenseCategories?.map((category, index) => (
+            <div key={category.category_name} className="flex items-center">
               <div className="w-full space-y-1">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium leading-none">
-                    {category.category}
+                    {category.category_name}
                   </p>
                   <p className="text-sm font-medium">
                     {formatCurrency(category.amount, privacyMode)}

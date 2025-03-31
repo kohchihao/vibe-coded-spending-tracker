@@ -38,6 +38,12 @@ export type TransactionUpdate = Partial<
   Omit<Transaction, 'id' | 'user_id' | 'created_at' | 'updated_at'>
 >;
 
+export type ExpenseBreakdown = {
+  category_name: string;
+  amount: number;
+  percentage: number;
+};
+
 // Helper function to get first and last day of current month
 const getCurrentMonthRange = () => {
   const now = new Date();
@@ -221,5 +227,15 @@ export const transactionsService = {
   // Get current month totals (convenience method)
   getCurrentMonthTotals: async (userId: string): Promise<MonthlyTotals> => {
     return transactionsService.getMonthlyTotals(userId);
+  },
+
+  // Get expense breakdown by category for current month
+  getExpenseBreakdown: async (userId: string): Promise<ExpenseBreakdown[]> => {
+    const { data, error } = await supabase.rpc('get_expense_breakdown', {
+      p_user_id: userId,
+    });
+
+    if (error) throw new Error(error.message);
+    return (data as ExpenseBreakdown[]) || [];
   },
 };
