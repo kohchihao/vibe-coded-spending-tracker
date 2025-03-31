@@ -98,19 +98,7 @@ export function ExpenseDataTable({ selectedMonth }: ExpenseDataTableProps) {
     () => [
       {
         accessorKey: 'date',
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === 'asc')
-              }
-            >
-              Date
-              <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-          );
-        },
+        header: 'Date',
         cell: ({ row }) => {
           // Format the date for display
           const date = new Date(row.getValue('date'));

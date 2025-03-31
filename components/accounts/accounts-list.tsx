@@ -9,43 +9,35 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import { usePrivacy } from '@/contexts/privacy-context';
+import { useSession } from '@/contexts/session-context';
+import { useAccounts } from '@/lib/hooks/useAccounts';
 import { formatCurrency } from '@/lib/utils';
-import { Edit, Trash } from 'lucide-react';
-
-// Mock data for accounts
-const accounts = [
-  {
-    id: '1',
-    name: 'Cash',
-    balance: 245.5,
-    description: 'Physical cash for day-to-day expenses',
-  },
-  {
-    id: '2',
-    name: 'Credit Card',
-    balance: 678.24,
-    description: 'Main credit card for online purchases and subscriptions',
-  },
-  {
-    id: '3',
-    name: 'Bank Account',
-    balance: 1322.15,
-    description: 'Primary checking account for bills and regular expenses',
-  },
-];
+import { Edit } from 'lucide-react';
 
 export function AccountsList() {
   const { privacyMode, isLoading } = usePrivacy();
+  const { user } = useSession();
+  const { data: accounts, isLoading: isAccountsLoading } = useAccounts(
+    user?.id ?? ''
+  );
 
-  // Don't render anything while loading
   if (isLoading) {
     return null;
   }
 
+  if (isAccountsLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-[200px]">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {accounts.map((account) => (
+      {accounts?.map((account) => (
         <Card key={account.id}>
           <CardHeader>
             <CardTitle>{account.name}</CardTitle>
@@ -61,10 +53,6 @@ export function AccountsList() {
             <Button variant="outline" size="sm">
               <Edit className="mr-2 h-4 w-4" />
               Edit
-            </Button>
-            <Button variant="outline" size="sm" className="text-destructive">
-              <Trash className="mr-2 h-4 w-4" />
-              Delete
             </Button>
           </CardFooter>
         </Card>
