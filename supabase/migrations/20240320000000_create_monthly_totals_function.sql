@@ -34,6 +34,7 @@ BEGIN
   account_totals AS (
     -- Calculate per-account expense totals, including accounts with zero expenses
     SELECT 
+      a.id,
       a.name,
       COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) as total
     FROM accounts a
@@ -51,6 +52,7 @@ BEGIN
     COALESCE(
       (SELECT json_agg(
         json_build_object(
+          'id', at.id,
           'name', at.name,
           'total', at.total
         )
