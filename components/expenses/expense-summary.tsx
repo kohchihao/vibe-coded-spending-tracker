@@ -14,6 +14,8 @@ export function ExpenseSummary() {
   const { data: monthlyTotals, isLoading: totalsLoading } =
     useCurrentMonthTotals();
 
+  const { account_expenses } = monthlyTotals ?? {};
+
   // Don't render anything while loading
   if (privacyLoading || totalsLoading) {
     return null;
@@ -49,9 +51,11 @@ export function ExpenseSummary() {
       <div className="flex items-center justify-between">
         <TabsList>
           <TabsTrigger value="all">All Accounts</TabsTrigger>
-          <TabsTrigger value="cash">Cash</TabsTrigger>
-          <TabsTrigger value="credit">Credit Card</TabsTrigger>
-          <TabsTrigger value="bank">Bank Account</TabsTrigger>
+          {account_expenses?.map((account) => (
+            <TabsTrigger key={account.id} value={account.name}>
+              {account.name}
+            </TabsTrigger>
+          ))}
         </TabsList>
       </div>
       <TabsContent value="all" className="space-y-4">
@@ -139,60 +143,37 @@ export function ExpenseSummary() {
           </Card>
         </div>
       </TabsContent>
-      <TabsContent value="cash" className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Cash Spending
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(245.5, privacyMode)}
-              </div>
-              <p className="text-xs text-muted-foreground">For April 2025</p>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-      <TabsContent value="credit" className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Credit Card Spending
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(678.24, privacyMode)}
-              </div>
-              <p className="text-xs text-muted-foreground">For April 2025</p>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
-      <TabsContent value="bank" className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Bank Account Spending
-              </CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(322.15, privacyMode)}
-              </div>
-              <p className="text-xs text-muted-foreground">For April 2025</p>
-            </CardContent>
-          </Card>
-        </div>
-      </TabsContent>
+
+      {account_expenses?.map((account) => (
+        <TabsContent
+          key={account.id}
+          value={account.name}
+          className="space-y-4"
+        >
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {account.name} Spending
+                </CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {formatCurrency(account.total, privacyMode)}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  For{' '}
+                  {new Date().toLocaleString('default', {
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      ))}
     </Tabs>
   );
 }

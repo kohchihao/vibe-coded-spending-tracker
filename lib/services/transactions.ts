@@ -28,6 +28,13 @@ export type MonthlyTotals = {
   total_expenses: number;
   total_income: number;
   total_transfers: number;
+  account_expenses: AccountExpense[];
+};
+
+type AccountExpense = {
+  id: number;
+  name: string;
+  total: number;
 };
 
 export type TransactionInsert = Omit<
