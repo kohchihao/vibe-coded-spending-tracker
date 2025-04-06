@@ -12,11 +12,10 @@ import {
 } from '@/components/ui/card';
 import { useSession } from '@/contexts/session-context';
 import { useCategories } from '@/lib/hooks/useCategories';
-import { cn } from '@/lib/utils';
 import { Edit } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import DynamicIcon from '../ui/icon';
 import { Spinner } from '../ui/spinner';
+import CategoryIcon from './CategoryIcon';
 
 export function CategoriesList() {
   const { user } = useSession();
@@ -40,21 +39,7 @@ export function CategoriesList() {
       {categories?.map((category) => (
         <Card key={category.id}>
           <CardHeader className="flex flex-row  items-center gap-4">
-            <div
-              className={cn(
-                'flex h-9 w-9 items-center justify-center rounded-full ',
-                category.color ? `bg-${category.color}-900` : '',
-                ''
-              )}
-            >
-              <DynamicIcon
-                name={(category.icon as any) ?? 'sparkles'}
-                className={cn(
-                  'h-5 w-5 ',
-                  category.color ? `text-${category.color}-500` : ''
-                )}
-              />
-            </div>
+            <CategoryIcon color={category.color} icon={category.icon} />
             <div>
               <CardTitle>{category.name}</CardTitle>
               <CardDescription>
