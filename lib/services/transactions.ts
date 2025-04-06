@@ -49,6 +49,9 @@ export type ExpenseBreakdown = {
   category_name: string;
   amount: number;
   percentage: number;
+  category_color: string;
+  category_icon: string;
+  category_id: number;
 };
 
 // Helper function to get first and last day of current month

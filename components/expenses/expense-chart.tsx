@@ -42,21 +42,34 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-// Generate a random color for each category
-const generateRandomColor = () => {
-  const colors = [
-    '#f97316', // orange-500
-    '#3b82f6', // blue-500
-    '#a855f7', // purple-500
-    '#ef4444', // red-500
-    '#22c55e', // green-500
-    '#f59e0b', // amber-500
-    '#ec4899', // pink-500
-    '#8b5cf6', // violet-500
-    '#14b8a6', // teal-500
-    '#f43f5e', // rose-500
-  ];
-  return colors[Math.floor(Math.random() * colors.length)];
+// Mapping of Tailwind CSS -500 colors to their hex values
+const TAILWIND_COLORS = {
+  slate: '#64748b',
+  gray: '#6b7280',
+  zinc: '#71717a',
+  neutral: '#737373',
+  stone: '#78716c',
+  red: '#ef4444',
+  orange: '#f97316',
+  amber: '#f59e0b',
+  yellow: '#eab308',
+  lime: '#84cc16',
+  green: '#22c55e',
+  emerald: '#10b981',
+  teal: '#14b8a6',
+  cyan: '#06b6d4',
+  sky: '#0ea5e9',
+  blue: '#3b82f6',
+  indigo: '#6366f1',
+  violet: '#8b5cf6',
+  purple: '#a855f7',
+  fuchsia: '#d946ef',
+  pink: '#ec4899',
+  rose: '#f43f5e',
+} as const;
+
+const getHexColor = (color: string) => {
+  return TAILWIND_COLORS[color as keyof typeof TAILWIND_COLORS];
 };
 
 interface ExpenseChartProps {
@@ -82,7 +95,7 @@ export function ExpenseChart({ selectedMonth }: ExpenseChartProps) {
       name: category.category_name,
       value: category.amount,
       percentage: category.percentage,
-      color: generateRandomColor(),
+      color: getHexColor(category.category_color),
     })) ?? [];
 
   return (
