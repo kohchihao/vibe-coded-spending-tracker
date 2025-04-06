@@ -3,7 +3,6 @@
 import { PrivateRoute } from '@/components/auth/private-route';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { DashboardShell } from '@/components/dashboard/dashboard-shell';
-import { AddExpenseFloatingButton } from '@/components/expenses/add-expanse-floating-button';
 import { ExpenseList } from '@/components/expenses/expense-list';
 import { ExpenseSummary } from '@/components/expenses/expense-summary';
 import { RecentTransactions } from '@/components/expenses/recent-transactions';
@@ -38,7 +37,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Floating action button for mobile - positioned at bottom LEFT */}
-          <AddExpenseFloatingButton />
+          {/* <AddExpenseFloatingButton /> */}
 
           {/* Recent transactions and expense breakdown side by side */}
           <div className="grid md:grid-cols-2 gap-6">

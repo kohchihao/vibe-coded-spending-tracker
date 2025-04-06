@@ -2,7 +2,6 @@
 
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { DashboardShell } from '@/components/dashboard/dashboard-shell';
-import { AddExpenseFloatingButton } from '@/components/expenses/add-expanse-floating-button';
 import { ExpenseChart } from '@/components/expenses/expense-chart';
 import { ExpenseDataTable } from '@/components/expenses/expense-data-table';
 import { ExpenseTableToolbar } from '@/components/expenses/expense-table-toolbar';
@@ -137,7 +136,7 @@ export default function ExpensesPage() {
       </Card>
 
       {/* Floating action button for mobile */}
-      <AddExpenseFloatingButton />
+      {/* <AddExpenseFloatingButton /> */}
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="md:col-span-1 order-2 md:order-1">
